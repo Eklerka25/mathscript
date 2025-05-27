@@ -1,11 +1,12 @@
-# btw i will change lexer and interpreter modes from strings to ints later
-
 T_ASSIGN      = 0
 T_EXPRESSION  = 1
 T_KEYWORD     = 2
 T_VAR         = 3
 
 variables = {}
+
+def println(what) -> None
+    print(what);
 
 class Lexer:
     def Lex(self, data):
@@ -35,7 +36,7 @@ class Lexer:
                         tokensMap[tokenPlace] = {x : T_ASSIGN}
                         lexerMode = "waitForExpression"
                     else:
-                        print(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
+                        println(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
                         break
                 
                 elif lexerMode == "waitForVariableReference":
@@ -43,7 +44,7 @@ class Lexer:
                         tokensMap[tokenPlace] = {x : T_VAR}
                         lexerMode = "break"
                     else:
-                        print(f"SYNTAX ERROR : Variable '{x}' does not exist at {tokenPlace}!")
+                        println(f"SYNTAX ERROR : Variable '{x}' does not exist at {tokenPlace}!")
                         break
 
                 elif lexerMode == "waitForExpression":
@@ -74,13 +75,13 @@ class Interpreter:
                 if tokenPlace == 1 and tmap[tokenPlace] == {'=': 0}:
                     interpreterMode = "variableAssignment"
                 else:
-                    print(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
+                    println(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
 
             elif interpreterMode == "variableAssignment":
                 variables[list(tmap[0].keys())[0]] = eval(list(tmap[tokenPlace].keys())[0], {}, variables)
 
             elif interpreterMode == "variableOutputMode":
-                print(variables[list(tmap[y].keys())[0]])
+                println(variables[list(tmap[y].keys())[0]])
 
             tokenPlace += 1
 
