@@ -9,8 +9,6 @@ variables = {}
 
 class Lexer:
     def Lex(self, data):
-        print("InputData:", data)
-        print("InputDataSize:", len(data))
 
         tokensMap = {}
         tokenPlace = 0
@@ -39,14 +37,24 @@ class Lexer:
                     else:
                         print(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
                         break
+                
+                elif lexerMode == "waitForVariableReference":
+                    if x.isalpha() and x.isascii() and x in variables:
+                        tokensMap[tokenPlace] = {x : T_VAR}
+                        lexerMode = "break"
+                    else:
+                        print(f"SYNTAX ERROR : Variable '{x}' does not exist at {tokenPlace}!")
+                        break
 
                 elif lexerMode == "waitForExpression":
                     currentExpression += x
                     tokenPlace -= 1
 
+                elif lexerMode == "break":
+                    break
+
             tokenPlace += 1
 
-        print("OutputMap:", tokensMap)
         return tokensMap
 
 class Interpreter:
@@ -57,7 +65,9 @@ class Interpreter:
 
         for y in tmap:
             if interpreterMode == "default":
-                if tokenPlace == 0:
+                if list(tmap[0].keys())[0] == ">":
+                    interpreterMode = "variableOutputMode"
+                else:
                     interpreterMode = "waitForAssign"
 
             elif interpreterMode == "waitForAssign":
@@ -69,12 +79,17 @@ class Interpreter:
             elif interpreterMode == "variableAssignment":
                 variables[list(tmap[0].keys())[0]] = eval(list(tmap[tokenPlace].keys())[0], {}, variables)
 
+            elif interpreterMode == "variableOutputMode":
+                print(variables[list(tmap[y].keys())[0]])
+
             tokenPlace += 1
 
         
 lexerInstance = Lexer()
 interpreterInstance = Interpreter()
 
-data = "x = 10 + 20;"
+data = "x = 2 + 3;"
 interpreterInstance.Interpret(lexerInstance.Lex(data))
-print(variables)
+
+data = "> x;"
+interpreterInstance.Interpret(lexerInstance.Lex(data))
