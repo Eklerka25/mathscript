@@ -1,4 +1,4 @@
-# btw i will change lexer modes from strings to ints later
+# btw i will change lexer and interpreter modes from strings to ints later
 
 T_ASSIGN      = 0
 T_EXPRESSION  = 1
@@ -47,8 +47,34 @@ class Lexer:
             tokenPlace += 1
 
         print("OutputMap:", tokensMap)
+        return tokensMap
+
+class Interpreter:
+    def Interpret(self, tmap):
+        interpreterMode = "default"
+
+        tokenPlace = 0
+
+        for y in tmap:
+            if interpreterMode == "default":
+                if tokenPlace == 0:
+                    interpreterMode = "waitForAssign"
+
+            elif interpreterMode == "waitForAssign":
+                if tokenPlace == 1 and tmap[tokenPlace] == {'=': 0}:
+                    interpreterMode = "variableAssignment"
+                else:
+                    print(f"SYNTAX ERROR : Expected assign symbol at {tokenPlace}!")
+
+            elif interpreterMode == "variableAssignment":
+                variables[list(tmap[0].keys())[0]] = eval(list(tmap[tokenPlace].keys())[0], {}, variables)
+
+            tokenPlace += 1
+
         
 lexerInstance = Lexer()
+interpreterInstance = Interpreter()
 
 data = "x = 10 + 20;"
-lexerInstance.Lex(data)
+interpreterInstance.Interpret(lexerInstance.Lex(data))
+print(variables)
