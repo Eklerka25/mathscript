@@ -7,9 +7,6 @@ T_VAR         = 3
 
 variables = {}
 
-context = {"a": 5, "b": 3}
-result = eval("2 + 2", {}, context)
-
 class Lexer:
     def Lex(self, data):
         print("InputData:", data)
