@@ -29,6 +29,9 @@ class Lexer:
                     elif x == ">":
                         tokensMap[tokenPlace] = {x : T_KEYWORD}
                         lexerMode = "waitForVariableReference"
+                    elif x == "<":
+                        tokensMap[tokenPlace] = {x : T_KEYWORD}
+                        lexerMode = "waitForVariableReference"
 
                 elif lexerMode == "waitForAssign":
                     if x == "=":
@@ -67,6 +70,8 @@ class Interpreter:
             if interpreterMode == "default":
                 if list(tmap[0].keys())[0] == ">":
                     interpreterMode = "variableOutputMode"
+                elif list(tmap[0].keys())[0] == "<":
+                    interpreterMode = "variableInputModeSet"
                 else:
                     interpreterMode = "waitForAssign"
 
@@ -81,6 +86,9 @@ class Interpreter:
 
             elif interpreterMode == "variableOutputMode":
                 print(variables[list(tmap[y].keys())[0]])
+            
+            elif interpreterMode == "variableInputModeSet":
+                variables[list(tmap[y].keys())[0]] = int(input("> "))
 
             tokenPlace += 1
 
@@ -88,7 +96,10 @@ class Interpreter:
 lexerInstance = Lexer()
 interpreterInstance = Interpreter()
 
-data = "x = 2 + 3;"
+data = "x = 10;"
+interpreterInstance.Interpret(lexerInstance.Lex(data))
+
+data = "< x;"
 interpreterInstance.Interpret(lexerInstance.Lex(data))
 
 data = "> x;"
